@@ -44,9 +44,6 @@ fun startWebServer(spotifyClient: SpotifyApiClient) {
                     return@get
                 }
                 
-    
-      
-                
                 val html = leerArchivo("static/artista.html")
                     .replace("{{nombre}}", artist.name)
                     .replace("{{id}}", artist.id)
@@ -87,6 +84,7 @@ fun startWebServer(spotifyClient: SpotifyApiClient) {
                     .replace("{{artistas}}", track.artists.joinToString(", ") { it.name })
                     .replace("{{album}}", track.album.name)
                     .replace("{{duracion}}", FormatDuration(track.durationMs).run())
+                    .replace("{{popularidad}}", track.popularity.toString())
                     .replace("{{explicito}}", if (track.explicit) "Sí" else "No")
                     .replace("{{preview}}", track.previewUrl ?: "")
                 

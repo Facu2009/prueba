@@ -4,24 +4,16 @@ import java.io.File
 import java.util.Scanner
 
 data class Ejecutar(
-    val clientId: String,
-    val clientSecret: String,
+    val spotifyClient: SpotifyApiClient,
     val archivoArtistas: String,
-    val archivoPistas: String,
     val archivoAlbumes: String,
+    val archivoPistas: String,
     val archivoPlaylists: String
 ) {
     private val scanner = Scanner(System.`in`)
     
     suspend fun ejecutar() {
-        val spotifyClient = SpotifyApiClient(clientId, clientSecret)
-
         try {
-            if (!spotifyClient.authenticate()) {
-                println("No se pudo obtener el token de acceso")
-                return
-            }
-
             println("\n" + "=".repeat(70))
             println("BIENVENIDO A LA CONSOLA DE SPOTIFY")
             println("=".repeat(70))
@@ -35,11 +27,11 @@ data class Ejecutar(
                 val opcion = input.toIntOrNull()
 
                 when (opcion) {
-                    1 -> consultarArtista(spotifyClient)
-                    2 -> consultarTrack(spotifyClient)
-                    3 -> consultarAlbum(spotifyClient)
-                    4 -> consultarPlaylist(spotifyClient)
-                    5 -> consultarTodoAleatorio(spotifyClient)
+                    1 -> consultarArtista()
+                    2 -> consultarTrack()
+                    3 -> consultarAlbum()
+                    4 -> consultarPlaylist()
+                    5 -> consultarTodoAleatorio()
                     6 -> {
                         println("\n¡Hasta luego!")
                         continuar = false
@@ -77,7 +69,9 @@ data class Ejecutar(
 
     private fun cargarIds(archivo: String): List<String> {
         return try {
-            File(archivo).readLines().filter { it.isNotBlank() }
+            File(archivo).readLines()
+                .map { it.trim() }
+                .filter { it.isNotBlank() }
         } catch (e: Exception) {
             println("❌ Error al cargar archivo $archivo: ${e.message}")
             emptyList()
@@ -91,7 +85,7 @@ data class Ejecutar(
         }
     }
 
-    private suspend fun consultarArtista(spotifyClient: SpotifyApiClient) {
+    private suspend fun consultarArtista() {
         println("\n" + "=".repeat(70))
         println("CONSULTAR ARTISTA")
         println("=".repeat(70))
@@ -135,13 +129,17 @@ data class Ejecutar(
             }
         }
 
-        artistaId?.let {
-            println("\n🔍 Buscando artista con ID: $it")
-            spotifyClient.getArtist(it)?.let { artist -> ArtistPrinter(artist).print() }
-        } ?: println("❌ No se pudo obtener el ID del artista")
+        if (artistaId != null) {
+            val artist = spotifyClient.getArtist(artistaId)
+            if (artist != null) {
+                ArtistPrinter(artist).print()
+            }
+        } else {
+            println("❌ No se pudo obtener el ID del artista")
+        }
     }
 
-    private suspend fun consultarTrack(spotifyClient: SpotifyApiClient) {
+    private suspend fun consultarTrack() {
         println("\n" + "=".repeat(70))
         println("CONSULTAR CANCIÓN")
         println("=".repeat(70))
@@ -185,13 +183,17 @@ data class Ejecutar(
             }
         }
 
-        trackId?.let {
-            println("\n🔍 Buscando pista con ID: $it")
-            spotifyClient.getTrack(it)?.let { track -> TrackPrinter(track).print() }
-        } ?: println("❌ No se pudo obtener el ID de la canción")
+        if (trackId != null) {
+            val track = spotifyClient.getTrack(trackId)
+            if (track != null) {
+                TrackPrinter(track).print()
+            }
+        } else {
+            println("❌ No se pudo obtener el ID de la canción")
+        }
     }
 
-    private suspend fun consultarAlbum(spotifyClient: SpotifyApiClient) {
+    private suspend fun consultarAlbum() {
         println("\n" + "=".repeat(70))
         println("CONSULTAR ÁLBUM")
         println("=".repeat(70))
@@ -235,13 +237,17 @@ data class Ejecutar(
             }
         }
 
-        albumId?.let {
-            println("\n🔍 Buscando álbum con ID: $it")
-            spotifyClient.getAlbum(it)?.let { album -> AlbumPrinter(album).print() }
-        } ?: println("❌ No se pudo obtener el ID del álbum")
+        if (albumId != null) {
+            val album = spotifyClient.getAlbum(albumId)
+            if (album != null) {
+                AlbumPrinter(album).print()
+            }
+        } else {
+            println("❌ No se pudo obtener el ID del álbum")
+        }
     }
 
-    private suspend fun consultarPlaylist(spotifyClient: SpotifyApiClient) {
+    private suspend fun consultarPlaylist() {
         println("\n" + "=".repeat(70))
         println("CONSULTAR PLAYLIST")
         println("=".repeat(70))
@@ -285,13 +291,17 @@ data class Ejecutar(
             }
         }
 
-        playlistId?.let {
-            println("\n🔍 Buscando playlist con ID: $it")
-            spotifyClient.getPlaylist(it)?.let { playlist -> PlaylistPrinter(playlist).print() }
-        } ?: println("❌ No se pudo obtener el ID de la playlist")
+        if (playlistId != null) {
+            val playlist = spotifyClient.getPlaylist(playlistId)
+            if (playlist != null) {
+                PlaylistPrinter(playlist).print()
+            }
+        } else {
+            println("❌ No se pudo obtener el ID de la playlist")
+        }
     }
 
-    private suspend fun consultarTodoAleatorio(spotifyClient: SpotifyApiClient) {
+    private suspend fun consultarTodoAleatorio() {
         println("\n" + "=".repeat(70))
         println("CONSULTANDO TODO ALEATORIAMENTE")
         println("=".repeat(70))
@@ -304,25 +314,37 @@ data class Ejecutar(
         if (artistasIds.isNotEmpty()) {
             val artistaId = artistasIds.random()
             println("\n🔍 Consultando artista aleatorio...")
-            spotifyClient.getArtist(artistaId)?.let { artist -> ArtistPrinter(artist).print() }
+            val artist = spotifyClient.getArtist(artistaId)
+            if (artist != null) {
+                ArtistPrinter(artist).print()
+            }
         }
         
         if (pistasIds.isNotEmpty()) {
             val pistaId = pistasIds.random()
             println("\n🔍 Consultando pista aleatoria...")
-            spotifyClient.getTrack(pistaId)?.let { track -> TrackPrinter(track).print() }
+            val track = spotifyClient.getTrack(pistaId)
+            if (track != null) {
+                TrackPrinter(track).print()
+            }
         }
         
         if (albumesIds.isNotEmpty()) {
             val albumId = albumesIds.random()
             println("\n🔍 Consultando álbum aleatorio...")
-            spotifyClient.getAlbum(albumId)?.let { album -> AlbumPrinter(album).print() }
+            val album = spotifyClient.getAlbum(albumId)
+            if (album != null) {
+                AlbumPrinter(album).print()
+            }
         }
         
         if (playlistsIds.isNotEmpty()) {
             val playlistId = playlistsIds.random()
             println("\n🔍 Consultando playlist aleatoria...")
-            spotifyClient.getPlaylist(playlistId)?.let { playlist -> PlaylistPrinter(playlist).print() }
+            val playlist = spotifyClient.getPlaylist(playlistId)
+            if (playlist != null) {
+                PlaylistPrinter(playlist).print()
+            }
         }
 
         println("\n✅ Todas las consultas completadas")
