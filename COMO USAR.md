@@ -1,5 +1,9 @@
 ANUAL DE USO SPOTIFY CONSULTOR
 
+DESCRIPCION GENERAL:
+
+Spotify Consulter es una aplicación interactiva desarrollada en Kotlin que permite a los usuarios explorar información detallada de la API de Spotify de manera simple y directa. El proyecto funciona como una herramienta educativa que demuestra la integración con servicios web externos, manejo de bases de datos y desarrollo de interfaces tanto por consola como web.
+
 Requisitos:
 -Java 21
 -Gradle: 9.0.0
@@ -85,14 +89,6 @@ Para detener el servidor:
 ctrl + c
 s
 
-Solucion de algun problema: 
-
-Puerto 8080 ocupado: 
-
-Cambia el puerto en WebServer.kt:
-kotlinembeddedServer(Netty, port = 8081) //LINEA 12
-
-
 Comando Rapidos:
 
 Modo consola:
@@ -103,12 +99,14 @@ Modo web:
 
 ./gradlew run --args="--web"
 
+Solucion de algun problema: 
 
-Problemas de puerto: 
+Puerto 8080 ocupado: 
 
-Si el codigo muestra error de puerto ocupado, cambiar en el archivo WebServer.kt en la linea 12
-el puerto a: 
-embeddedServer(Netty, port = 8080)
+Cambia el puerto en WebServer.kt (//LINEA 11): 
+class WebServer(private val spotifyClient: SpotifyApiClient, private val port: Int = 9090) 
 
-Y en la linea 171 a: 
-println("🌐 Servidor web iniciado en: http://localhost:8080")
+A: 
+
+class WebServer(private val spotifyClient: SpotifyApiClient, private val port: Int = 8080)
+
