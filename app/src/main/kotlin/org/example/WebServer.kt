@@ -9,7 +9,7 @@ import io.ktor.server.routing.* // importa funciones para definir rutas
 import io.ktor.http.* // importa tipos http
 
 fun startWebServer(spotifyClient: SpotifyApiClient) { // funcion que inicia el servidor web
-    embeddedServer(Netty, port = 8080) { // crea servidor web con netty en puerto 8080
+    embeddedServer(Netty, port = 9090) { // crea servidor web con netty en puerto 8080
         routing { // define las rutas del servidor
             
             // Página principal
@@ -168,7 +168,7 @@ fun startWebServer(spotifyClient: SpotifyApiClient) { // funcion que inicia el s
         }
         
         println("\n" + "=".repeat(70)) // imprime linea de separacion
-        println("🌐 Servidor web iniciado en: http://localhost:8080") // imprime mensaje de inicio
+        println("🌐 Servidor web iniciado en: http://localhost:9090") // imprime mensaje de inicio
         println("=".repeat(70)) // imprime linea de separacion
     }.start(wait = true) // inicia el servidor y espera
 }

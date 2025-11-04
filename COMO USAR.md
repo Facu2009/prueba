@@ -16,7 +16,7 @@ EJECUCION:
 
 Paso 1: Clona repositorio
 
-git clone 
+git clone git@github.com:etec-programacion-2/programaci-n-2-2025-gimenez-rodriguez-spotify-gaspatacufa.git
 
 Paso 2: Ejecucion
 
@@ -104,4 +104,11 @@ Modo web:
 ./gradlew run --args="--web"
 
 
+Problemas de puerto: 
 
+Si el codigo muestra error de puerto ocupado, cambiar en el archivo WebServer.kt en la linea 12
+el puerto a: 
+embeddedServer(Netty, port = 8080)
+
+Y en la linea 171 a: 
+println("🌐 Servidor web iniciado en: http://localhost:8080")
